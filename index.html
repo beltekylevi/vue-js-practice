@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Vue.js introduction</title>
+  <style>
+    .passed {
+      background: rgba(0, 255, 0, .5);
+    }
+    .failed {
+      background: rgba(255, 0, 0, .5);
+    }
+    .students-container {
+      cursor: pointer;
+    }
+    .students-container--li {
+      margin: .5em auto;
+    }
+    .big-text {
+      font-size: 1.5em;
+    }
+    .capitalized {
+      text-transform: capitalize;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <template><h1>'hoy</h1></template>
+    <p :title="title" v-once>{{ message }} World!</p>
+    <p>{{ message }} World!</p>
+    <button :disabled="isDisabled">Click me!</button>
+    <h2>{{ courseAndLectureName }}</h2>
+    <ul class="students-container">
+      <li v-for="(student, index) in students"
+        v-on:click="pass"
+        v-bind:data-id="index"
+        class="students-container--li"
+        :class="[{ capitalized: true }, 'big-text', { passed: student.isPassed, failed: !student.isPassed }]"
+        :key="student.id"
+      >
+        {{ student.name }} {{ student.isPassed ? '✔️' : '❌' }}
+      </li>
+    </ul>
+    <p v-if="isEveryStudentPassed">All of the {{ students.length }} students have passed the exam.</p>
+    <p v-else>{{ passedStudentCount }} students have passed the exam out of {{ students.length }}</p>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script>
+    const app = new Vue({
+      el: '#root',
+      data: {
+        message: 'Hello',
+        title: `You loaded this page on ${new Date().toLocaleString()}`,
+        isDisabled: true,
+        courseName: 'Vue',
+        lectureName: 'Introduction',
+        students: [
+          { id: 'b4270e25c9fadba2b79e18055141d882', name: 'john', isPassed: false },
+          { id: '3e6e450acf34e9f3333bfdadb516e533', name: 'Jane', isPassed: false }
+        ],
+      },
+      computed: {
+        passedStudentCount: function () {
+          return this.students.filter(s => s.isPassed).length
+        },
+        isEveryStudentPassed: function () {
+          return this.passedStudentCount === this.students.length
+        },
+        courseAndLectureName: {
+          get: function() {
+            return `${this.courseName} ${this.lectureName}`
+          },
+          set: function(value) {
+            [this.courseName, this.lectureName] = value.split(' ')
+          },
+        },
+      },
+      watch: {
+        message: function (value, previousValue) {
+          console.log(`current value "${this.message}"`)
+          console.log(`message changed to "${value}" from "${previousValue}"`)
+          if (!value) {
+            this.message = previousValue
+          }
+        },
+      },
+      methods: {
+        pass: function (e) {
+          const id = e.target.dataset['id']
+          this.students[id].isPassed = !this.students[id].isPassed
+        },
+      },
+    })
+    console.log(app.$el)
+    console.log(app.$data)
+  </script>
+</body>
+</html>
